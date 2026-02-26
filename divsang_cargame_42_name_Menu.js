@@ -1223,8 +1223,8 @@ if (reversed == null) { reversed = false; }
 		exportRoot.stop();
 		
 		//name
-		
 		exportRoot.playerName.text = playerName;
+		//console.log(playerName);
 		
 		// GAME
 		
@@ -1399,6 +1399,7 @@ if (reversed == null) { reversed = false; }
 		
 		function initialize(evt)
 		{
+			
 			//remove old listeners
 			document.removeEventListener("keydown", onKeyDown);
 			document.removeEventListener("keyup", onKeyUp);
@@ -1674,7 +1675,7 @@ if (reversed == null) { reversed = false; }
 	this.playerName.parent = this;
 	this.playerName.setTransform(362.2274,666.9626,0.9999,0.9999,-5.4236);
 
-	this.timeline.addTween(cjs.Tween.get(this.playerName).to({_off:true},19).wait(23));
+	this.timeline.addTween(cjs.Tween.get(this.playerName).wait(19).to({scaleX:1,scaleY:1,rotation:0,x:587.55,y:34.45,text:"",font:"bold 25px 'Verdana'",textAlign:NaN,lineHeight:32.4,lineWidth:168},0).wait(23));
 
 	// MENU2
 	this.goBtn = new lib.goBtn();
@@ -1706,22 +1707,15 @@ if (reversed == null) { reversed = false; }
 	this.timeline.addTween(cjs.Tween.get({}).to({state:[{t:this.instance_2},{t:this.instance_1},{t:this.instance}]}).to({state:[{t:this.menuMovieClip},{t:this.replayBtn}]},19).wait(23));
 
 	// TOP_TEXT
-	this.playerName_1 = new cjs.Text("", "bold 25px 'Verdana'");
-	this.playerName_1.name = "playerName_1";
-	this.playerName_1.textAlign = "right";
-	this.playerName_1.lineHeight = 32;
-	this.playerName_1.lineWidth = 168;
-	this.playerName_1.parent = this;
-	this.playerName_1.setTransform(702.55,34.45);
-
 	this.text = new cjs.Text("SCORE :", "bold 25px 'Verdana'");
 	this.text.textAlign = "center";
 	this.text.lineHeight = 32;
 	this.text.lineWidth = 125;
 	this.text.parent = this;
 	this.text.setTransform(93.75,34.45);
+	this.text._off = true;
 
-	this.timeline.addTween(cjs.Tween.get({}).to({state:[]}).to({state:[{t:this.text},{t:this.playerName_1}]},19).wait(23));
+	this.timeline.addTween(cjs.Tween.get(this.text).wait(19).to({_off:false},0).wait(23));
 
 	// TOP_BAR_SCORE
 	this.score = new cjs.Text("", "bold 25px 'Verdana'");
@@ -1790,10 +1784,10 @@ lib.properties = {
 	color: "#FFFFFF",
 	opacity: 1.00,
 	manifest: [
-		{src:"images/CachedBmp_16.png?1772087501589", id:"CachedBmp_16"},
-		{src:"images/CachedBmp_15.png?1772087501589", id:"CachedBmp_15"},
-		{src:"images/ROAD_BASE.png?1772087501589", id:"ROAD_BASE"},
-		{src:"images/divsang_cargame_42_name_Menu_atlas_1.png?1772087501364", id:"divsang_cargame_42_name_Menu_atlas_1"}
+		{src:"images/CachedBmp_16.png?1772088778023", id:"CachedBmp_16"},
+		{src:"images/CachedBmp_15.png?1772088778023", id:"CachedBmp_15"},
+		{src:"images/ROAD_BASE.png?1772088778023", id:"ROAD_BASE"},
+		{src:"images/divsang_cargame_42_name_Menu_atlas_1.png?1772088777802", id:"divsang_cargame_42_name_Menu_atlas_1"}
 	],
 	preloads: []
 };
