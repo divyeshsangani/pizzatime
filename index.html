@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<!--
+	NOTES:
+	1. All tokens are represented by '$' sign in the template.
+	2. You can write your code only wherever mentioned.
+	3. All occurrences of existing tokens will be replaced by their appropriate values.
+	4. Blank lines will be removed automatically.
+	5. Remove unnecessary comments before creating your template.
+-->
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="authoring-tool" content="Adobe_Animate_CC">
+<title>divsang_cargame_42_name_Menu</title>
+<!-- write your code here -->
+<style>
+  #animation_container {
+	position:absolute;
+	margin:auto;
+	left:0;right:0;
+	top:0;bottom:0;
+  }
+</style>
+<script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+<script src="divsang_cargame_42_name_Menu.js?1772087501598"></script>
+<script>
+// Global Scripts
+	// global player values
+var playerName;
+var score;
+var leaderboard; 
+var apiKey = "$2a$10$VHd5RgClMjCsgJj8zOSd1eoCqjAhhgWENhCwPRCTPLkfYfVn9Ja4O";
+var binId = "699b6a8ed0ea881f40cfecd8";
+leaderboard = { players: {} };
+function getScores(callback) 
+{
+    let req = new XMLHttpRequest();
+    req.onreadystatechange = () => {
+        if (req.readyState == XMLHttpRequest.DONE) {
+            if (req.status == 200) {
+                var data = JSON.parse(req.responseText);
+                leaderboard = data.record; // JSONBin  response in "record"
+                if (callback) callback();
+            } else {
+                console.error("Failed to get scores:", req.status);
+            }
+        }
+    };
+    req.open("GET", "https://api.jsonbin.io/v3/b/" + binId + "/latest", true);
+    req.setRequestHeader("X-Master-Key", apiKey);
+    req.send();
+}
+function updateScores() {
+    if (!leaderboard.players) {
+        leaderboard.players = {};
+    }
+    var existing = leaderboard.players[playerName];
+    var prevHigh = existing ? existing.highScore : 0;
+    leaderboard.players[playerName] = {
+        lastScore: score,
+        highScore: Math.max(score, prevHigh)
+    };
+}
+function putScores() 
+{
+    let req = new XMLHttpRequest();
+    req.onreadystatechange = () => {
+        if (req.readyState == XMLHttpRequest.DONE) {
+            if (req.status == 200) {
+                console.log("Score saved!");
+				showLeaderboard();
+            } else {
+                console.error("Failed to save score:", req.status);
+            }
+        }
+    };
+    req.open("PUT", "https://api.jsonbin.io/v3/b/" + binId, true);
+    req.setRequestHeader("Content-Type", "application/json");
+    req.setRequestHeader("X-Master-Key", apiKey);
+    req.send(JSON.stringify(leaderboard));
+	console.log("BIN VALUE : " + leaderboard);
+}
+function sendScore() 
+{
+    getScores(function() {      // 1. fetch data
+        updateScores();          // 2. update memory
+        putScores();             // 3. send it back
+    });
+}
+function showLeaderboard()
+{
+	console.log("leaderboard object:", JSON.stringify(leaderboard, null, 2));
+    console.log("players:", leaderboard.players);
+    var players = leaderboard.players;
+    var sorted  = Object.keys(players).sort((a, b) => players[b].highScore - players[a].highScore);
+    for (var i = 0; i < 4; i++)
+    {
+        var n = i + 1;
+        exportRoot.gameOverMovieClip["player" + n + "Name"].text  = sorted[i] ? sorted[i] : "---";
+        exportRoot.gameOverMovieClip["player" + n + "Score"].text = sorted[i] ? players[sorted[i]].highScore : "-";
+    }
+    var mc = exportRoot.gameOverMovieClip;
+    mc.playerPos.text = sorted.indexOf(playerName) + 1 || "-";
+    mc.playerName.text = playerName;
+    mc.playerNameHighScore.text = score;
+}
+// STAGE
+var stageWidth;
+var stageHeight;
+function getStageSize() {
+	stageWidth = stage.canvas.width / stage.scaleX;
+	stageHeight = stage.canvas.height / stage.scaleY;
+}
+function hitTestPoint(mc, globalX, globalY) {
+	// scale the global coordinates to match the stage size
+	globalX *= stage.scaleX;
+	globalY *= stage.scaleY;
+	var localPt = mc.globalToLocal(globalX, globalY);
+	return mc.hitTest(localPt.x, localPt.y);
+}
+// RANDOMNESS
+function randomNumber(min, max) {
+	if (min > max) {
+		var swapTemp = min;
+		min = max;
+		max = swapTemp;
+	}
+	var randomNum = (Math.random() * (max - min)) + min;
+	return randomNum;
+}
+function randomInteger(min, max) {
+	if (min > max) {
+		var swapTemp = min;
+		min = max;
+		max = swapTemp;
+	}
+	var randomInt = Math.floor(Math.random() * (max - min + 1)) + min;
+	return randomInt;
+}
+//temp code claude
+function getMCCenter(mc) 
+{
+    // nominalBounds gives {x, y, width, height} relative to registration point
+    var b = mc.nominalBounds;
+    var localCenterX = b.x + b.width / 2;
+    var localCenterY = b.y + b.height / 2;
+    return mc.localToGlobal(localCenterX, localCenterY);
+}
+function hitTestMCBounds(mc1, mc2) {
+    var c1 = getMCCenter(mc1);
+    var c2 = getMCCenter(mc2);
+    var xDist = c2.x - c1.x;
+    var yDist = c2.y - c1.y;
+    var mc1HalfWidth  = (mc1.nominalBounds.width  * mc1.scaleX) / 2;
+    var mc1HalfHeight = (mc1.nominalBounds.height * mc1.scaleY) / 2;
+    var mc2HalfWidth  = (mc2.nominalBounds.width  * mc2.scaleX) / 2;
+    var mc2HalfHeight = (mc2.nominalBounds.height * mc2.scaleY) / 2;
+    var rangeX = mc1HalfWidth + mc2HalfWidth;
+    var rangeY = mc1HalfHeight + mc2HalfHeight;
+    return Math.abs(xDist) < rangeX && Math.abs(yDist) < rangeY;
+}</script>
+<script>
+var canvas, stage, exportRoot, anim_container, dom_overlay_container, fnStartAnimation;
+function init() {
+	canvas = document.getElementById("canvas");
+	anim_container = document.getElementById("animation_container");
+	dom_overlay_container = document.getElementById("dom_overlay_container");
+	var comp=AdobeAn.getComposition("DBD6414581A244B6BD8CD9EDC48EA919");
+	var lib=comp.getLibrary();
+	var loader = new createjs.LoadQueue(false);
+	loader.addEventListener("fileload", function(evt){handleFileLoad(evt,comp)});
+	loader.addEventListener("complete", function(evt){handleComplete(evt,comp)});
+	var lib=comp.getLibrary();
+	loader.loadManifest(lib.properties.manifest);
+}
+function handleFileLoad(evt, comp) {
+	var images=comp.getImages();	
+	if (evt && (evt.item.type == "image")) { images[evt.item.id] = evt.result; }	
+}
+function handleComplete(evt,comp) {
+	//This function is always called, irrespective of the content. You can use the variable "stage" after it is created in token create_stage.
+	var lib=comp.getLibrary();
+	var ss=comp.getSpriteSheet();
+	var queue = evt.target;
+	var ssMetadata = lib.ssMetadata;
+	for(i=0; i<ssMetadata.length; i++) {
+		ss[ssMetadata[i].name] = new createjs.SpriteSheet( {"images": [queue.getResult(ssMetadata[i].name)], "frames": ssMetadata[i].frames} )
+	}
+	exportRoot = new lib.divsang_cargame_42_name_Menu();
+	stage = new lib.Stage(canvas);
+	stage.enableMouseOver();	
+	//Registers the "tick" event listener.
+	fnStartAnimation = function() {
+		stage.addChild(exportRoot);
+		createjs.Ticker.framerate = lib.properties.fps;
+		createjs.Ticker.addEventListener("tick", stage);
+	}	    
+	//Code to support hidpi screens and responsive scaling.
+	AdobeAn.makeResponsive(true,'both',false,1,[canvas,anim_container,dom_overlay_container]);	
+	AdobeAn.compositionLoaded(lib.properties.id);
+	fnStartAnimation();
+}
+</script>
+<!-- write your code here -->
+</head>
+<body onload="init();" style="margin:0px;">
+	<div id="animation_container" style="background-color:rgba(255, 255, 255, 1.00); width:720px; height:1280px">
+		<canvas id="canvas" width="720" height="1280" style="position: absolute; display: block; background-color:rgba(255, 255, 255, 1.00);"></canvas>
+		<div id="dom_overlay_container" style="pointer-events:none; overflow:hidden; width:720px; height:1280px; position: absolute; left: 0px; top: 0px; display: block;">
+		</div>
+	</div>
+</body>
+</html>
