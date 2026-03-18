@@ -22,7 +22,7 @@
   }
 </style>
 <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
-<script src="divsang_CarGame.js?1773796149926"></script>
+<script src="divsang_CarGame.js?1773797358915"></script>
 <script>
 // Global Scripts
 	// global player values
@@ -30,6 +30,12 @@ var playerName;
 var score;
 var leaderboard; 
 var coinToRemove = [];
+var currentPage = 0;
+var pageSize = 4;
+var sorted;
+var players;
+var start;
+var totalPages;
 var apiKey = "$2a$10$VHd5RgClMjCsgJj8zOSd1eoCqjAhhgWENhCwPRCTPLkfYfVn9Ja4O";
 var binId = "699b6a8ed0ea881f40cfecd8";
 leaderboard = { players: {} };
@@ -108,7 +114,7 @@ function showLeaderboard()
 }*/
 function renderPage()
 	{
-		var start = currentPage * pageSize;
+		start = currentPage * pageSize;
 		for (var i = 0; i < pageSize; i++)
 		{
 			var n = i + 1;
@@ -141,11 +147,9 @@ function showLeaderboard()
 {
     console.log("leaderboard object:", JSON.stringify(leaderboard, null, 2));
     console.log("players:", leaderboard.players);
-    var players = leaderboard.players;
-    var sorted = Object.keys(players).sort((a, b) => players[b].highScore - players[a].highScore);
-    var currentPage = 0;
-    var pageSize = 4;
-    var totalPages = Math.ceil(sorted.length / pageSize);
+	players = leaderboard.players;
+	sorted = Object.keys(players).sort((a, b) => players[b].highScore - players[a].highScore);
+	totalPages = Math.ceil(sorted.length / pageSize);
     // remove old listeners
     exportRoot.gameOverMovieClip.nextBtn.removeEventListener("click", onNext);
     exportRoot.gameOverMovieClip.previousBtn.removeEventListener("click", onPrev);
