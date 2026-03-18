@@ -11,7 +11,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="authoring-tool" content="Adobe_Animate_CC">
-<title>cargame_44</title>
+<title>divsang_CarGame</title>
 <!-- write your code here -->
 <style>
   #animation_container {
@@ -22,13 +22,14 @@
   }
 </style>
 <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
-<script src="cargame_44.js?1773205825610"></script>
+<script src="divsang_CarGame.js?1773796149926"></script>
 <script>
 // Global Scripts
 	// global player values
 var playerName;
 var score;
 var leaderboard; 
+var coinToRemove = [];
 var apiKey = "$2a$10$VHd5RgClMjCsgJj8zOSd1eoCqjAhhgWENhCwPRCTPLkfYfVn9Ja4O";
 var binId = "699b6a8ed0ea881f40cfecd8";
 leaderboard = { players: {} };
@@ -87,6 +88,7 @@ function sendScore()
         putScores();             // 3. send it back
     });
 }
+/*
 function showLeaderboard()
 {
 	console.log("leaderboard object:", JSON.stringify(leaderboard, null, 2));
@@ -103,6 +105,57 @@ function showLeaderboard()
     mc.playerPos.text = sorted.indexOf(playerName) + 1 || "-";
     mc.playerName.text = playerName;
     mc.playerNameHighScore.text = score;
+}*/
+function renderPage()
+	{
+		var start = currentPage * pageSize;
+		for (var i = 0; i < pageSize; i++)
+		{
+			var n = i + 1;
+			var playerIndex = start + i;
+			var rank = playerIndex + 1; // global rank
+			exportRoot.gameOverMovieClip["player" + n + "Name"].text  = sorted[playerIndex] ? sorted[playerIndex] : "---";
+			exportRoot.gameOverMovieClip["player" + n + "Score"].text = sorted[playerIndex] ? players[sorted[playerIndex]].highScore : "-";
+			exportRoot.gameOverMovieClip["one two three four".split(" ")[i]].text = sorted[playerIndex] ? rank : "-";
+		}
+		exportRoot.gameOverMovieClip.nextBtn.visible     = currentPage < totalPages - 1;
+		exportRoot.gameOverMovieClip.previousBtn.visible = currentPage > 0;
+	}
+function onNext()
+    {
+        if (currentPage < totalPages - 1)
+        {
+            currentPage++;
+            renderPage();
+        }
+    }
+    function onPrev()
+    {
+        if (currentPage > 0)
+        {
+            currentPage--;
+            renderPage();
+        }
+    }
+function showLeaderboard()
+{
+    console.log("leaderboard object:", JSON.stringify(leaderboard, null, 2));
+    console.log("players:", leaderboard.players);
+    var players = leaderboard.players;
+    var sorted = Object.keys(players).sort((a, b) => players[b].highScore - players[a].highScore);
+    var currentPage = 0;
+    var pageSize = 4;
+    var totalPages = Math.ceil(sorted.length / pageSize);
+    // remove old listeners
+    exportRoot.gameOverMovieClip.nextBtn.removeEventListener("click", onNext);
+    exportRoot.gameOverMovieClip.previousBtn.removeEventListener("click", onPrev);
+    exportRoot.gameOverMovieClip.nextBtn.addEventListener("click", onNext);
+    exportRoot.gameOverMovieClip.previousBtn.addEventListener("click", onPrev);
+    var mc = exportRoot.gameOverMovieClip;
+    mc.playerPos.text = sorted.indexOf(playerName) + 1 || "-";
+    mc.playerName.text = playerName;
+    mc.playerNameHighScore.text = score;
+    renderPage(); // render first page
 }
 // STAGE
 var stageWidth;
@@ -186,7 +239,7 @@ function handleComplete(evt,comp) {
 	for(i=0; i<ssMetadata.length; i++) {
 		ss[ssMetadata[i].name] = new createjs.SpriteSheet( {"images": [queue.getResult(ssMetadata[i].name)], "frames": ssMetadata[i].frames} )
 	}
-	exportRoot = new lib.cargame_44();
+	exportRoot = new lib.divsang_CarGame();
 	stage = new lib.Stage(canvas);
 	stage.enableMouseOver();	
 	//Registers the "tick" event listener.
